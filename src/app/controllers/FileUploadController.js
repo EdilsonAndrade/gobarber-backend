@@ -2,7 +2,7 @@ import File from '../models/File';
 
 class FileUploadController {
   async store(req, res) {
-    const { originalname: path, filename: name } = req.file;
+    const { originalname: name, filename: path } = req.file;
 
     const file = await File.create({
       name,
