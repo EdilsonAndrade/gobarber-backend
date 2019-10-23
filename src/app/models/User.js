@@ -16,6 +16,7 @@ class User extends Model {
         sequelize: connection, // aqui pode utilizar varias propriedades, opções, trocar nome de tabelas...
       }
     );
+
     this.addHook('beforeSave', async user => {
       if (user.password) {
         user.password_hash = await bcript.hash(user.password, 8);
@@ -27,6 +28,10 @@ class User extends Model {
       }
     });
     return this;
+  }
+
+  static associate(model) {
+    this.belongsTo(model('files', { foreignKey: 'avatar_id' }));
   }
 
   checkPassword(password) {

@@ -5,7 +5,7 @@ import auth from '../../config/auth';
 export default async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    return res.statu(401).json({ message: 'User not authorized' });
+    return res.status(401).json({ message: 'User not authorized' });
   }
   const [, token] = authHeader.split(' ');
   try {
