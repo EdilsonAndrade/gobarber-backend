@@ -121,6 +121,11 @@ class AppointmentController {
           as: 'provider',
           attributes: ['name', 'email'],
         },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name'],
+        },
       ],
     });
 
@@ -141,10 +146,25 @@ class AppointmentController {
     appointment.canceled_at = new Date();
     appointment.save();
 
+    // abaixo há nacessidade de usar o await para que caso ocorra algum erro no envio do email podemos pegar este erro
+    // para tomarmos alguma ação
     await mail.sendEmail({
       to: `${appointment.provider.name} <${appointment.provider.email}>`,
-      subject: `Cancelado Agendamento das ${appointment.date}`,
-      text: 'Agendamento cancelado',
+      subject: `Cancelado Agendamento do ${format(
+        appointment.date,
+        "'dia' dd 'de' MMMM,  hh:MM'h'",
+        {
+          locale: pt,
+        }
+      )}`,
+      template: 'cancelation',
+      context: {
+        provider: appointment.provider.name,
+        user: appointment.user.name,
+        date: format(appointment.date, "'Dia' dd 'de' MMMM,  hh:MM'h'", {
+          locale: pt,
+        }),
+      },
     });
 
     return res.json(appointment);
