@@ -2,7 +2,7 @@ import nodemailerhbs from 'nodemailer-express-handlebars';
 import exphbs from 'express-handlebars';
 import { resolve } from 'path';
 import nodemailer from 'nodemailer';
-import mailConfig from '../../config/mail';
+import mailConfig from '../config/mail';
 
 class Mail {
   constructor() {
@@ -18,7 +18,7 @@ class Mail {
   }
 
   configureTemplates() {
-    const viewPath = resolve(__dirname, '..', 'views', 'emails');
+    const viewPath = resolve(__dirname, '..', 'app', 'views', 'emails');
     this.transporter.use(
       'compile',
       nodemailerhbs({

@@ -5,13 +5,14 @@ import User from '../models/User';
 import File from '../models/File';
 import Appointment from '../models/Appointment';
 import Notification from '../schemas/NotificationSchema';
-import mail from '../lib/Mail';
+import Queue from '../../lib/Queue';
+import CancellationMail from '../jobs/CancellationMail';
 
 class AppointmentController {
   async index(req, res) {
     const { page, limit } = req.query;
 
-    const appointments = await Appointment.findAll({
+    const appointments = await Appointment.finddAll({
       where: {
         canceled_at: null,
         user_id: req.userId,
@@ -19,7 +20,7 @@ class AppointmentController {
       limit,
       offset: (page - 1) * limit,
       order: ['date'],
-      attributes: ['id', 'date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
       include: [
         {
           model: User,
@@ -146,27 +147,9 @@ class AppointmentController {
     appointment.canceled_at = new Date();
     appointment.save();
 
-    // abaixo há nacessidade de usar o await para que caso ocorra algum erro no envio do email podemos pegar este erro
-    // para tomarmos alguma ação
-    await mail.sendEmail({
-      to: `${appointment.provider.name} <${appointment.provider.email}>`,
-      subject: `Cancelado Agendamento do ${format(
-        appointment.date,
-        "'dia' dd 'de' MMMM,  hh:MM'h'",
-        {
-          locale: pt,
-        }
-      )}`,
-      template: 'cancelation',
-      context: {
-        provider: appointment.provider.name,
-        user: appointment.user.name,
-        date: format(appointment.date, "'Dia' dd 'de' MMMM,  hh:MM'h'", {
-          locale: pt,
-        }),
-      },
+    Queue.add(CancellationMail.key, {
+      appointment,
     });
-
     return res.json(appointment);
   }
 }
