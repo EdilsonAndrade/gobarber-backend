@@ -12,7 +12,7 @@ class AppointmentController {
   async index(req, res) {
     const { page, limit } = req.query;
 
-    const appointments = await Appointment.finddAll({
+    const appointments = await Appointment.findAll({
       where: {
         canceled_at: null,
         user_id: req.userId,

@@ -1,5 +1,4 @@
 import { Model, Sequelize } from 'sequelize';
-import paths from '../../config/paths';
 
 class File extends Model {
   static init(connection) {
@@ -10,7 +9,7 @@ class File extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `${paths.filePath}/files/${encodeURI(this.path)}`;
+            return `${process.env.APP_URL}/files/${encodeURI(this.path)}`;
           },
         },
       },

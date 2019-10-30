@@ -9,7 +9,6 @@ export default async (req, res, next) => {
   }
   const [, token] = authHeader.split(' ');
   try {
-    console.log(auth);
     const decoder = await promisify(jwt.verify)(token, auth.secret);
     if (!decoder) {
       return res.status(401).json({ message: 'User not verified' });
