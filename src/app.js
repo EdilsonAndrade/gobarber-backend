@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import 'express-async-errors';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -22,6 +23,8 @@ class App {
 
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
+    this.server.use(cors());
+    // this.server.use(cors({origin: 'http://dominio do seu site.com.br'})); // ao colocar online tem q ser assim por exemplo
     this.server.use(express.json());
     this.server.use(
       '/files',

@@ -11,6 +11,7 @@ class User extends Model {
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         provider: Sequelize.BOOLEAN,
+        avatar_id: Sequelize.INTEGER,
       },
       {
         sequelize: connection, // aqui pode utilizar varias propriedades, opções, trocar nome de tabelas...
