@@ -49,7 +49,6 @@ class UserController {
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
-
     const { email, oldPassword } = req.body;
     const user = await User.findByPk(req.userId);
 
@@ -57,17 +56,19 @@ class UserController {
       return res.status(404).json({ message: 'User Not Found' });
     }
 
-    if (user.email !== email) {
+    if (email && user.email !== email) {
       const userExists = await User.findOne({ where: { email } });
       if (userExists) {
         return res.status(400).json({ message: 'E-mail already exists' });
       }
     }
+
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
     await user.update(req.body);
+
     const { id, name, provider, avatar } = await User.findByPk(req.userId, {
       include: [
         {
@@ -77,6 +78,7 @@ class UserController {
         },
       ],
     });
+
     return res.json({
       id,
       name,
